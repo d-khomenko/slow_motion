@@ -2,9 +2,8 @@
 //CROP VIDEO SCREEN//
 //-----------------//
 import 'package:flutter/material.dart';
-import 'package:helpers/helpers/widgets/animated_interactive_viewer.dart';
-import 'package:video_editor/domain/bloc/controller.dart';
-import 'package:video_editor/ui/crop/crop_grid.dart';
+import 'package:helpers/helpers.dart';
+import 'package:video_editor/video_editor.dart';
 
 class CropScreen extends StatelessWidget {
   const CropScreen({Key? key, required this.controller}) : super(key: key);

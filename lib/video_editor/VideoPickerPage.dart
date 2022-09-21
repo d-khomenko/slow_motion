@@ -1,17 +1,14 @@
-
 //-------------------//
 //VIDEO EDITOR SCREEN//
 //-------------------//
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:helpers/helpers/transition.dart';
-
-import 'crop_screen.dart';
-
 import 'package:video_editor/video_editor.dart';
 import 'package:video_player/video_player.dart';
+
+import 'crop_screen.dart';
 
 class VideoEditor extends StatefulWidget {
   const VideoEditor({Key? key, required this.file}) : super(key: key);
@@ -67,7 +64,7 @@ class _VideoEditorState extends State<VideoEditor> {
         if (!mounted) return;
 
         final VideoPlayerController videoController =
-        VideoPlayerController.file(file);
+            VideoPlayerController.file(file);
         videoController.initialize().then((value) async {
           setState(() {});
           videoController.play();
@@ -91,7 +88,7 @@ class _VideoEditorState extends State<VideoEditor> {
         _exportText = "Video success export!";
         setState(() => _exported = true);
         Future.delayed(const Duration(seconds: 2),
-                () => setState(() => _exported = false));
+            () => setState(() => _exported = false));
       },
     );
   }
@@ -114,7 +111,7 @@ class _VideoEditorState extends State<VideoEditor> {
 
         setState(() => _exported = true);
         Future.delayed(const Duration(seconds: 2),
-                () => setState(() => _exported = false));
+            () => setState(() => _exported = false));
       },
     );
   }
@@ -125,111 +122,111 @@ class _VideoEditorState extends State<VideoEditor> {
       backgroundColor: const Color(0xFF646161),
       body: _controller.initialized
           ? SafeArea(
-          child: Stack(children: [
-            Column(children: [
-              _topNavBar(),
-              Expanded(
-                  child: DefaultTabController(
-                      length: 2,
-                      child: Column(children: [
-                        Expanded(
-                            child: TabBarView(
-                              physics: const NeverScrollableScrollPhysics(),
-                              children: [
-                                Stack(alignment: Alignment.center, children: [
-                                  CropGridViewer(
-                                    controller: _controller,
-                                    showGrid: false,
-                                  ),
-                                  AnimatedBuilder(
-                                    animation: _controller.video,
-                                    builder: (_, __) => OpacityTransition(
-                                      visible: !_controller.isPlaying,
-                                      child: GestureDetector(
-                                        onTap: _controller.video.play,
-                                        child: Container(
-                                          width: 40,
-                                          height: 40,
-                                          decoration: const BoxDecoration(
-                                            color: Colors.white,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: const Icon(Icons.play_arrow,
-                                              color: Colors.black),
+              child: Stack(children: [
+              Column(children: [
+                _topNavBar(),
+                Expanded(
+                    child: DefaultTabController(
+                        length: 2,
+                        child: Column(children: [
+                          Expanded(
+                              child: TabBarView(
+                            physics: const NeverScrollableScrollPhysics(),
+                            children: [
+                              Stack(alignment: Alignment.center, children: [
+                                CropGridViewer(
+                                  controller: _controller,
+                                  showGrid: false,
+                                ),
+                                AnimatedBuilder(
+                                  animation: _controller.video,
+                                  builder: (_, __) => OpacityTransition(
+                                    visible: !_controller.isPlaying,
+                                    child: GestureDetector(
+                                      onTap: _controller.video.play,
+                                      child: Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: const BoxDecoration(
+                                          color: Colors.white,
+                                          shape: BoxShape.circle,
                                         ),
+                                        child: const Icon(Icons.play_arrow,
+                                            color: Colors.black),
                                       ),
                                     ),
                                   ),
-                                ]),
-                                CoverViewer(controller: _controller)
-                              ],
-                            )),
-                        Container(
-                            height: 200,
-                            margin: const EdgeInsets.only(top: 10),
-                            child: Column(children: [
-                              TabBar(
-                                indicatorColor: Colors.white,
-                                tabs: [
-                                  Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.center,
-                                      children: const [
-                                        Padding(
-                                            padding: EdgeInsets.all(5),
-                                            child: Icon(Icons.content_cut)),
-                                        Text('Trim')
-                                      ]),
-                                  Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.center,
-                                      children: const [
-                                        Padding(
-                                            padding: EdgeInsets.all(5),
-                                            child: Icon(Icons.video_label)),
-                                        Text('Cover')
-                                      ]),
-                                ],
-                              ),
-                              Expanded(
-                                child: TabBarView(
-                                  children: [
-                                    Column(
+                                ),
+                              ]),
+                              CoverViewer(controller: _controller)
+                            ],
+                          )),
+                          Container(
+                              height: 200,
+                              margin: const EdgeInsets.only(top: 10),
+                              child: Column(children: [
+                                TabBar(
+                                  indicatorColor: Colors.white,
+                                  tabs: [
+                                    Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.center,
-                                        children: _trimSlider()),
-                                    Column(
+                                            MainAxisAlignment.center,
+                                        children: const [
+                                          Padding(
+                                              padding: EdgeInsets.all(5),
+                                              child: Icon(Icons.content_cut)),
+                                          Text('Trim')
+                                        ]),
+                                    Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.center,
-                                        children: [_coverSelection()]),
+                                            MainAxisAlignment.center,
+                                        children: const [
+                                          Padding(
+                                              padding: EdgeInsets.all(5),
+                                              child: Icon(Icons.video_label)),
+                                          Text('Cover')
+                                        ]),
                                   ],
                                 ),
-                              )
-                            ])),
-                        _customSnackBar(),
-                        ValueListenableBuilder(
-                          valueListenable: _isExporting,
-                          builder: (_, bool export, __) => OpacityTransition(
-                            visible: export,
-                            child: AlertDialog(
-                              backgroundColor: Colors.white,
-                              title: ValueListenableBuilder(
-                                valueListenable: _exportingProgress,
-                                builder: (_, double value, __) => Text(
-                                  "Exporting video ${(value * 100).ceil()}%",
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
+                                Expanded(
+                                  child: TabBarView(
+                                    children: [
+                                      Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: _trimSlider()),
+                                      Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [_coverSelection()]),
+                                    ],
+                                  ),
+                                )
+                              ])),
+                          _customSnackBar(),
+                          ValueListenableBuilder(
+                            valueListenable: _isExporting,
+                            builder: (_, bool export, __) => OpacityTransition(
+                              visible: export,
+                              child: AlertDialog(
+                                backgroundColor: Colors.white,
+                                title: ValueListenableBuilder(
+                                  valueListenable: _exportingProgress,
+                                  builder: (_, double value, __) => Text(
+                                    "Exporting video ${(value * 100).ceil()}%",
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        )
-                      ])))
-            ])
-          ]))
+                          )
+                        ])))
+              ])
+            ]))
           : const Center(child: CircularProgressIndicator()),
     );
   }
@@ -279,9 +276,9 @@ class _VideoEditorState extends State<VideoEditor> {
   }
 
   String formatter(Duration duration) => [
-    duration.inMinutes.remainder(60).toString().padLeft(2, '0'),
-    duration.inSeconds.remainder(60).toString().padLeft(2, '0')
-  ].join(":");
+        duration.inMinutes.remainder(60).toString().padLeft(2, '0'),
+        duration.inSeconds.remainder(60).toString().padLeft(2, '0')
+      ].join(":");
 
   List<Widget> _trimSlider() {
     return [

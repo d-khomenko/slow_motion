@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:some_video_editor/video_editor/video_picker_page.dart';
+import 'package:slow_motion/video_editor/video_picker_page.dart';
 
 void main() => runApp(const MyApp());
 
