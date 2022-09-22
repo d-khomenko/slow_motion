@@ -6,7 +6,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:helpers/helpers/transition.dart';
-import 'package:slow_motion/video_editor/line_chart.dart';
+import 'package:slow_motion/video_editor/custom_line_chart.dart';
 import 'package:video_editor/video_editor.dart';
 import 'package:video_player/video_player.dart';
 
@@ -174,7 +174,7 @@ class _VideoEditorState extends State<VideoEditor> {
                             color: Color(0xFF646161),
                             child: Column(
                               children: [
-                                LineChartSample2(
+                                CustomLineChart(
                                   value: _currentSpeed,
                                 ),
                                 Slider(
