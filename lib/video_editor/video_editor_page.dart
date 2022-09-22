@@ -1,9 +1,8 @@
 //-------------------//
 //VIDEO EDITOR SCREEN//
 //-------------------//
+
 import 'dart:io';
-import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
-import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:flutter/material.dart';
 
 class VideoEditorPage extends StatefulWidget {
@@ -16,25 +15,7 @@ class VideoEditorPage extends StatefulWidget {
 }
 
 class _VideoEditorPageState extends State<VideoEditorPage> {
-  _onButtonTap() {
-    final fileName = widget.file.path.split('/').last;
-    //print(fileName);
-    //print(fileName);
-
-    FFmpegKit.execute('-i $fileName -c:v mpeg4 file2.mp4')
-        .then((session) async {
-      final returnCode = await session.getReturnCode();
-      final startTime = session.getStartTime();
-      //final anotherValue = session.
-
-      if (ReturnCode.isSuccess(returnCode)) {
-      } else if (ReturnCode.isCancel(returnCode)) {
-      } else {
-        // ERROR
-
-      }
-    });
-  }
+  _onButtonTap() {}
 
   @override
   Widget build(BuildContext context) {
