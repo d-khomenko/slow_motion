@@ -28,9 +28,7 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
       //final anotherValue = session.
 
       if (ReturnCode.isSuccess(returnCode)) {
-        final a = 123;
       } else if (ReturnCode.isCancel(returnCode)) {
-        final b = 2;
       } else {
         // ERROR
 
