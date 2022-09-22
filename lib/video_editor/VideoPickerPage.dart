@@ -3,11 +3,9 @@
 //-------------------//
 import 'dart:developer';
 import 'dart:io';
-
-import 'package:ffmpeg_kit_flutter/return_code.dart';
+// import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
+// import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:flutter/material.dart';
-
-import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 
 import 'package:helpers/helpers/transition.dart';
 import 'package:slow_motion/video_editor/custom_line_chart.dart';
@@ -105,7 +103,7 @@ class _VideoEditorState extends State<VideoEditor> {
 
     final path = widget.file.path;
     print(path);
-    await _playerController.pause();
+    //await _playerController.pause();
 
     ///cut
     ///ffmpeg -i input.mp4 -t 4 slow.mp4
@@ -115,21 +113,21 @@ class _VideoEditorState extends State<VideoEditor> {
     ///concat
     ///ffmpeg -f concat -i <(for f in ./part-*.mp4; do echo "file '$PWD/$f'"; done) -c copy output.mp4
 
-    FFmpegKit.execute('-i file1.mp4 -c:v mpeg4 file2.mp4')
-        .then((session) async {
-      final returnCode = await session.getReturnCode();
+    // FFmpegKit.execute('-i file1.mp4 -c:v mpeg4 file2.mp4')
+    //     .then((session) async {
+    //   final returnCode = await session.getReturnCode();
 
-      if (ReturnCode.isSuccess(returnCode)) {
-        // SUCCESS
+    //   if (ReturnCode.isSuccess(returnCode)) {
+    //     // SUCCESS
 
-      } else if (ReturnCode.isCancel(returnCode)) {
-        // CANCEL
+    //   } else if (ReturnCode.isCancel(returnCode)) {
+    //     // CANCEL
 
-      } else {
-        // ERROR
+    //   } else {
+    //     // ERROR
 
-      }
-    });
+    //   }
+    // });
   }
 
   void _exportCover() async {
