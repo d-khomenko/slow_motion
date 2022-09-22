@@ -4,7 +4,11 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:flutter/material.dart';
+
+import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
+
 import 'package:helpers/helpers/transition.dart';
 import 'package:slow_motion/video_editor/custom_line_chart.dart';
 import 'package:video_editor/video_editor.dart';
@@ -30,6 +34,7 @@ class _VideoEditorState extends State<VideoEditor> {
   bool _exported = false;
   String _exportText = "";
   late VideoEditorController _controller;
+  late VideoPlayerController _playerController;
 
   @override
   void initState() {
@@ -66,26 +71,25 @@ class _VideoEditorState extends State<VideoEditor> {
         _isExporting.value = false;
         if (!mounted) return;
 
-        final VideoPlayerController videoController =
-            VideoPlayerController.file(file);
-        videoController.initialize().then((value) async {
+        _playerController = VideoPlayerController.file(file);
+        _playerController.initialize().then((value) async {
           setState(() {});
-          videoController.play();
-          videoController.setLooping(true);
+          _playerController.play();
+          _playerController.setLooping(true);
           await showDialog(
             context: context,
             builder: (_) => Padding(
               padding: const EdgeInsets.all(30),
               child: Center(
                 child: AspectRatio(
-                  aspectRatio: videoController.value.aspectRatio,
-                  child: VideoPlayer(videoController),
+                  aspectRatio: _playerController.value.aspectRatio,
+                  child: VideoPlayer(_playerController),
                 ),
               ),
             ),
           );
-          await videoController.pause();
-          videoController.dispose();
+          await _playerController.pause();
+          _playerController.dispose();
         });
 
         _exportText = "Video success export!";
@@ -97,8 +101,35 @@ class _VideoEditorState extends State<VideoEditor> {
   }
 
   void _onSliderChangeStart(double value) async {
-    final position = _controller.videoPosition;
-    log(position.inSeconds.toString());
+    final position = _controller.videoPosition.inSeconds % 60;
+
+    final path = widget.file.path;
+    print(path);
+    await _playerController.pause();
+
+    ///cut
+    ///ffmpeg -i input.mp4 -t 4 slow.mp4
+    ///ffmpeg -i input.mp4 -ss 00:00:04 part-2.mp4
+    ///speed up
+    ///ffmpeg -i slow.mp4 -filter:v "setpts=0.5*PTS" part-1.mp4
+    ///concat
+    ///ffmpeg -f concat -i <(for f in ./part-*.mp4; do echo "file '$PWD/$f'"; done) -c copy output.mp4
+
+    FFmpegKit.execute('-i file1.mp4 -c:v mpeg4 file2.mp4')
+        .then((session) async {
+      final returnCode = await session.getReturnCode();
+
+      if (ReturnCode.isSuccess(returnCode)) {
+        // SUCCESS
+
+      } else if (ReturnCode.isCancel(returnCode)) {
+        // CANCEL
+
+      } else {
+        // ERROR
+
+      }
+    });
   }
 
   void _exportCover() async {
