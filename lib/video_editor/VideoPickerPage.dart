@@ -1,10 +1,12 @@
 //-------------------//
 //VIDEO EDITOR SCREEN//
 //-------------------//
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:helpers/helpers/transition.dart';
+import 'package:slow_motion/video_editor/line_chart.dart';
 import 'package:video_editor/video_editor.dart';
 import 'package:video_player/video_player.dart';
 
@@ -24,6 +26,7 @@ class _VideoEditorState extends State<VideoEditor> {
   final _isExporting = ValueNotifier<bool>(false);
   final double height = 60;
 
+  double _currentSpeed = 1;
   bool _exported = false;
   String _exportText = "";
   late VideoEditorController _controller;
@@ -91,6 +94,11 @@ class _VideoEditorState extends State<VideoEditor> {
             () => setState(() => _exported = false));
       },
     );
+  }
+
+  void _onSliderChangeStart(double value) async {
+    final position = _controller.videoPosition;
+    log(position.inSeconds.toString());
   }
 
   void _exportCover() async {
@@ -162,7 +170,33 @@ class _VideoEditorState extends State<VideoEditor> {
                             ],
                           )),
                           Container(
-                              height: 200,
+                            height: 220,
+                            color: Color(0xFF646161),
+                            child: Column(
+                              children: [
+                                LineChartSample2(
+                                  value: _currentSpeed,
+                                ),
+                                Slider(
+                                  onChangeStart: _onSliderChangeStart,
+                                  inactiveColor: Colors.grey,
+                                  activeColor: Colors.amber,
+                                  value: _currentSpeed,
+                                  min: 0,
+                                  max: 2,
+                                  divisions: 20,
+                                  onChanged: (newSpeed) => {
+                                    setState(() {
+                                      _currentSpeed = newSpeed;
+                                      log(_currentSpeed.toString());
+                                    })
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                              height: 170,
                               margin: const EdgeInsets.only(top: 10),
                               child: Column(children: [
                                 TabBar(
@@ -323,7 +357,7 @@ class _VideoEditorState extends State<VideoEditor> {
 
   Widget _coverSelection() {
     return Container(
-        margin: EdgeInsets.symmetric(horizontal: height / 4),
+        margin: EdgeInsets.symmetric(horizontal: height / 5),
         child: CoverSelection(
           controller: _controller,
           height: height,
