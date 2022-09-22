@@ -39,6 +39,7 @@ class _VideoEditorState extends State<VideoEditor> {
     _controller = VideoEditorController.file(widget.file,
         maxDuration: const Duration(seconds: 30))
       ..initialize().then((_) => setState(() {}));
+
     super.initState();
   }
 
@@ -70,6 +71,7 @@ class _VideoEditorState extends State<VideoEditor> {
         if (!mounted) return;
 
         _playerController = VideoPlayerController.file(file);
+        _playerController.setPlaybackSpeed(0.3);
         _playerController.initialize().then((value) async {
           setState(() {});
           _playerController.play();
@@ -100,7 +102,8 @@ class _VideoEditorState extends State<VideoEditor> {
 
   void _onSliderChangeStart(double value) async {
     final position = _controller.videoPosition.inSeconds % 60;
-
+    final occuredValue = value + 0.25;
+    _controller.video.setPlaybackSpeed(occuredValue);
     final path = widget.file.path;
     print(path);
     //await _playerController.pause();
@@ -217,7 +220,14 @@ class _VideoEditorState extends State<VideoEditor> {
                                   onChanged: (newSpeed) => {
                                     setState(() {
                                       _currentSpeed = newSpeed;
-                                      log(_currentSpeed.toString());
+                                      final position =
+                                          _controller.videoPosition.inSeconds %
+                                              60;
+                                      final occuredValue = newSpeed + 0.25;
+                                      _controller.video
+                                          .setPlaybackSpeed(occuredValue);
+                                      final path = widget.file.path;
+                                      print(path);
                                     })
                                   },
                                 ),
