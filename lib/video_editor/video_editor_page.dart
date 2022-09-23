@@ -98,10 +98,14 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
 
   void _onSliderChangeStart(double value) async {
     final position = _controller.videoPosition.inSeconds % 60;
+    final file = _controller.file;
+    print(file.path);
+    print(position);
     final occuredValue = value + 0.25;
     _controller.video.setPlaybackSpeed(occuredValue);
     final path = widget.file.path;
     print(path);
+    //print(path);
   }
 
   void _exportCover() async {
@@ -194,8 +198,8 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
                                       final occuredValue = newSpeed + 0.25;
                                       _controller.video
                                           .setPlaybackSpeed(occuredValue);
-                                      final path = widget.file.path;
-                                      print(path);
+                                      //final path = widget.file.path;
+                                      //print(path);
                                     })
                                   },
                                 ),
