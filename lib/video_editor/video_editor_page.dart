@@ -1,12 +1,8 @@
 //-------------------//
 //VIDEO EDITOR SCREEN//
 //-------------------//
-import 'dart:developer';
 import 'dart:io';
-// import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
-// import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:flutter/material.dart';
-
 import 'package:helpers/helpers/transition.dart';
 import 'package:slow_motion/video_editor/custom_line_chart.dart';
 import 'package:video_editor/video_editor.dart';
@@ -14,16 +10,16 @@ import 'package:video_player/video_player.dart';
 
 import 'crop_screen.dart';
 
-class VideoEditor extends StatefulWidget {
-  const VideoEditor({Key? key, required this.file}) : super(key: key);
+class VideoEditorPage extends StatefulWidget {
+  const VideoEditorPage({Key? key, required this.file}) : super(key: key);
 
   final File file;
 
   @override
-  State<VideoEditor> createState() => _VideoEditorState();
+  State<VideoEditorPage> createState() => _VideoEditorPageState();
 }
 
-class _VideoEditorState extends State<VideoEditor> {
+class _VideoEditorPageState extends State<VideoEditorPage> {
   final _exportingProgress = ValueNotifier<double>(0.0);
   final _isExporting = ValueNotifier<bool>(false);
   final double height = 60;
@@ -106,31 +102,6 @@ class _VideoEditorState extends State<VideoEditor> {
     _controller.video.setPlaybackSpeed(occuredValue);
     final path = widget.file.path;
     print(path);
-    //await _playerController.pause();
-
-    ///cut
-    ///ffmpeg -i input.mp4 -t 4 slow.mp4
-    ///ffmpeg -i input.mp4 -ss 00:00:04 part-2.mp4
-    ///speed up
-    ///ffmpeg -i slow.mp4 -filter:v "setpts=0.5*PTS" part-1.mp4
-    ///concat
-    ///ffmpeg -f concat -i <(for f in ./part-*.mp4; do echo "file '$PWD/$f'"; done) -c copy output.mp4
-
-    // FFmpegKit.execute('-i file1.mp4 -c:v mpeg4 file2.mp4')
-    //     .then((session) async {
-    //   final returnCode = await session.getReturnCode();
-
-    //   if (ReturnCode.isSuccess(returnCode)) {
-    //     // SUCCESS
-
-    //   } else if (ReturnCode.isCancel(returnCode)) {
-    //     // CANCEL
-
-    //   } else {
-    //     // ERROR
-
-    //   }
-    // });
   }
 
   void _exportCover() async {
@@ -220,9 +191,6 @@ class _VideoEditorState extends State<VideoEditor> {
                                   onChanged: (newSpeed) => {
                                     setState(() {
                                       _currentSpeed = newSpeed;
-                                      final position =
-                                          _controller.videoPosition.inSeconds %
-                                              60;
                                       final occuredValue = newSpeed + 0.25;
                                       _controller.video
                                           .setPlaybackSpeed(occuredValue);

@@ -6,7 +6,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'VideoPickerPage.dart';
+import 'video_editor_page.dart';
 
 class VideoPickerPage extends StatefulWidget {
   const VideoPickerPage({Key? key}) : super(key: key);
@@ -25,7 +25,7 @@ class _VideoPickerPageState extends State<VideoPickerPage> {
           context,
           MaterialPageRoute<void>(
               builder: (BuildContext context) =>
-                  VideoEditor(file: File(file.path))));
+                  VideoEditorPage(file: File(file.path))));
     }
   }
 
