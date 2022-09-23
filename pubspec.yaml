@@ -20,7 +20,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.18.1 <3.0.0'
+  sdk: '>=2.12.1 <3.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -34,7 +34,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  ffmpeg_kit_flutter: 4.5.1
+  
   video_player: ^2.4.7
   file_picker: ^5.1.0
   # video_editor: ^1.4.3
@@ -42,7 +42,11 @@ dependencies:
   path: ^1.8.2
   helpers: ^1.1.4
   fl_chart: ^0.55.1
+  #ffmpeg
+  ffmpeg_kit_flutter: 4.5.1
   video_edit_factory: ^0.1.2
+  video_trimmer: ^1.1.3
+  # video_edit_factory: ^0.1.2
 
 
 dev_dependencies:
