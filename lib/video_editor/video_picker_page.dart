@@ -4,6 +4,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'video_editor_page.dart';
@@ -17,6 +18,7 @@ class VideoPickerPage extends StatefulWidget {
 
 class _VideoPickerPageState extends State<VideoPickerPage> {
   final ImagePicker _picker = ImagePicker();
+  String _batteryPercentage = "battery percentage";
 
   void _pickVideo() async {
     final XFile? file = await _picker.pickVideo(source: ImageSource.gallery);
@@ -47,13 +49,41 @@ class _VideoPickerPageState extends State<VideoPickerPage> {
                 fontSize: 18.0,
               ),
             ),
+            Text(
+              "$_batteryPercentage",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18.0,
+              ),
+            ),
             ElevatedButton(
               onPressed: _pickVideo,
               child: const Text("Pick Video From Gallery"),
             ),
+            ElevatedButton(
+                onPressed: _getBatteryInformation,
+                child: const Text("get Battery Info"))
           ],
         ),
       ),
     );
+  }
+
+  static const batteryChannel = const MethodChannel('battery');
+
+  Future<void> _getBatteryInformation() async {
+    String batteryPercentage;
+    try {
+      var result = await batteryChannel.invokeMethod('getBatteryLevel');
+      batteryPercentage = 'battery lvl at $result';
+    } on PlatformException catch (e) {
+      batteryPercentage = "failed to get battery level ${e.message}";
+    } catch (e) {
+      batteryPercentage = "no implementation for this platform";
+    }
+
+    setState(() {
+      _batteryPercentage = batteryPercentage;
+    });
   }
 }
