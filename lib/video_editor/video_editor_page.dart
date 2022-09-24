@@ -11,7 +11,6 @@ import 'package:ffmpeg_kit_flutter/media_information_session.dart';
 import 'package:ffmpeg_kit_flutter/session.dart';
 import 'package:flutter/material.dart';
 //import 'package:video_edit_factory/video_edit_factory.dart';
-import 'package:path/path.dart' as path;
 import 'package:video_edit_factory/video_factory/video_edit_factory.dart';
 import 'package:video_trimmer/video_trimmer.dart';
 
@@ -32,9 +31,11 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
   }
 
   void asyncInit() async {
-    final length = await lengthOfVideo(widget.file.path);
-    log(length.toString());
-    //await splitVideo(widget.file);
+    final strings = await splitVideoToParts(
+      durationOfPartInSeconds: 3,
+      video: widget.file,
+    );
+    log(strings.toString());
   }
 
   @override
@@ -63,19 +64,34 @@ Future<double> lengthOfVideo(String filePath) async {
   return c.future;
 }
 
-// Future<void> splitVideo({int durationOfPart,  }) async {
-//   final Trimmer _trimmer = Trimmer();
-//   await _trimmer.loadVideo(videoFile: file);
-//   File anotherFile;
+Future<List<String>> splitVideoToParts({
+  required int durationOfPartInSeconds,
+  required File video,
+}) async {
+  const millisecondsInSec = 1000;
+  final c = Completer<List<String>>();
 
-//   await _trimmer.saveTrimmedVideo(
-//     startValue: 0,
-//     endValue: 30000,
-//     // ffmpegCommand:
-//     //     '-vf "fps=10,scale=480:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0',
-//     onSave: (outputPath) {
-//       print(outputPath);
-//     },
-//   );
-//   for (var i = 0; i < 5; i++) {}
-// }
+  List<String> videosNames = [];
+
+  final length = await lengthOfVideo(video.path);
+  final countOfParts = length ~/ durationOfPartInSeconds;
+  final duration = millisecondsInSec * durationOfPartInSeconds;
+
+  for (var i = 0; i < countOfParts; i++) {
+    final Trimmer _trimmer = Trimmer();
+    await _trimmer.loadVideo(videoFile: video);
+    await _trimmer.saveTrimmedVideo(
+      videoFileName: "part$i",
+      startValue: (i * duration).toDouble(),
+      endValue: (i * duration + duration).toDouble(),
+      // ffmpegCommand:
+      //     '-vf "fps=10,scale=480:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0',
+      onSave: (outputPath) {
+        log(outputPath.toString());
+        videosNames.add(outputPath ?? "");
+      },
+    );
+    _trimmer.dispose();
+  }
+  return videosNames;
+}
