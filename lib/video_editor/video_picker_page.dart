@@ -61,7 +61,7 @@ class _VideoPickerPageState extends State<VideoPickerPage> {
               child: const Text("Pick Video From Gallery"),
             ),
             ElevatedButton(
-                onPressed: _getBatteryInformation,
+                onPressed: changeSpeedVideo,
                 child: const Text("get Battery Info"))
           ],
         ),
@@ -70,6 +70,7 @@ class _VideoPickerPageState extends State<VideoPickerPage> {
   }
 
   static const batteryChannel = const MethodChannel('battery');
+  static const videoChannel = const MethodChannel('video_manipulation');
 
   Future<void> _getBatteryInformation() async {
     String batteryPercentage;
@@ -85,5 +86,22 @@ class _VideoPickerPageState extends State<VideoPickerPage> {
     setState(() {
       _batteryPercentage = batteryPercentage;
     });
+  }
+
+  Future<void> changeSpeedVideo() async {
+    final outputPath = await videoChannel.invokeMethod("generateVideo", [
+      [
+        "/Users/dmitrohomenko/Library/Developer/CoreSimulator/Devices/AB197756-66FA-4C89-976C-BE3A177812E3/data/Containers/Data/Application/BF10881B-FE01-49E9-ACBD-D64D046F08F6/tmp/123.mov"
+      ],
+      "speeedy.mov",
+      30,
+      4.0
+    ]);
+
+    print(outputPath);
+
+    // setState(() {
+    //   _batteryPercentage = outputPath;
+    // });
   }
 }

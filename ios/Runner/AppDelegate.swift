@@ -3,25 +3,41 @@ import Flutter
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
-  override func application(
-    _ application: UIApplication,
-    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-  ) -> Bool {
-      
-    let controller = window?.rootViewController as! FlutterViewController
-    let channel = FlutterMethodChannel(name: "battery", binaryMessenger: controller as! FlutterBinaryMessenger)
-      channel.setMethodCallHandler ({
-          [weak self] (call: FlutterMethodCall, result: FlutterResult) -> Void in
-          guard call.method == "getBatteryLevel" else {
-              result(FlutterMethodNotImplemented)
-              return
-          }
-          self?.receiveBatteryLevel(result: result)
-      })
-      
-    GeneratedPluginRegistrant.register(with: self)
-    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-  }
+    override func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        
+        let controller = window?.rootViewController as! FlutterViewController
+        let channel = FlutterMethodChannel(name: "battery", binaryMessenger: controller as! FlutterBinaryMessenger)
+        channel.setMethodCallHandler ({
+            [weak self] (call: FlutterMethodCall, result: FlutterResult) -> Void in
+            guard call.method == "getBatteryLevel" else {
+                result(FlutterMethodNotImplemented)
+                return
+            }
+            self?.receiveBatteryLevel(result: result)
+        })
+        
+        let plugin = SwiftVideoManipulationPlugin()
+        let anotherChannel = FlutterMethodChannel(name: "video_manipulation", binaryMessenger: controller as! FlutterBinaryMessenger)
+        anotherChannel.setMethodCallHandler ({
+            [plugin] (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
+            guard call.method == "generateVideo" else {
+                result(FlutterMethodNotImplemented)
+                return
+            }
+            plugin.handle(call, result: result)
+        })
+        
+        
+        
+        
+        
+        
+        GeneratedPluginRegistrant.register(with: self)
+        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
     
     private func receiveBatteryLevel(result: FlutterResult) {
         let device = UIDevice.current

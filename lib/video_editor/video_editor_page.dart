@@ -33,6 +33,7 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
   }
 
   void asyncInit() async {
+    print(widget.file.path);
     // videos = await splitVideoToParts(
     //   durationOfPartInSeconds: 3,
     //   video: widget.file,
