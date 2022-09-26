@@ -1,10 +1,16 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class CustomLineChart extends StatefulWidget {
-  final double value;
+  final double speed;
+  final List<FlSpot> points;
 
-  CustomLineChart({Key? key, required this.value}) : super(key: key);
+  CustomLineChart({
+    Key? key,
+    required this.speed,
+    required this.points,
+  }) : super(key: key);
 
   @override
   _CustomLineChartState createState() => _CustomLineChartState();
@@ -166,24 +172,7 @@ class _CustomLineChartState extends State<CustomLineChart> {
       maxY: 2,
       lineBarsData: [
         LineChartBarData(
-          spots: [
-            FlSpot(0, widget.value),
-            FlSpot(5, 1),
-            FlSpot(10, 1),
-            FlSpot(15, 1),
-            FlSpot(20, 1),
-            FlSpot(25, 1),
-            FlSpot(30, 1),
-            FlSpot(35, 1),
-            FlSpot(40, 1),
-            FlSpot(45, 1),
-            FlSpot(50, 1),
-            FlSpot(55, 1),
-            FlSpot(60, 1),
-            FlSpot(65, 1),
-            FlSpot(70, 1),
-            FlSpot(75, 1),
-          ],
+          spots: widget.points,
           isCurved: true,
           gradient: LinearGradient(
             colors: gradientColors,

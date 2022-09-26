@@ -1,10 +1,10 @@
 //-------------------//
 //VIDEO EDITOR SCREEN//
 //-------------------//
-import 'dart:developer';
 import 'dart:io';
 // import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 // import 'package:ffmpeg_kit_flutter/return_code.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import 'package:helpers/helpers/transition.dart';
@@ -27,6 +27,26 @@ class _VideoEditorState extends State<VideoEditor> {
   final _exportingProgress = ValueNotifier<double>(0.0);
   final _isExporting = ValueNotifier<bool>(false);
   final double height = 60;
+
+  List<FlSpot> spots = [
+    //FlSpot(0, widget.value),
+    FlSpot(0, 1),
+    FlSpot(5, 1),
+    FlSpot(10, 1),
+    FlSpot(15, 1),
+    FlSpot(20, 1),
+    FlSpot(25, 1),
+    FlSpot(30, 1),
+    FlSpot(35, 1),
+    FlSpot(40, 1),
+    FlSpot(45, 1),
+    FlSpot(50, 1),
+    FlSpot(55, 1),
+    FlSpot(60, 1),
+    FlSpot(65, 1),
+    FlSpot(70, 1),
+    FlSpot(75, 1),
+  ];
 
   double _currentSpeed = 1;
   bool _exported = false;
@@ -71,6 +91,7 @@ class _VideoEditorState extends State<VideoEditor> {
         if (!mounted) return;
 
         _playerController = VideoPlayerController.file(file);
+
         _playerController.setPlaybackSpeed(0.3);
         _playerController.initialize().then((value) async {
           setState(() {});
@@ -98,39 +119,6 @@ class _VideoEditorState extends State<VideoEditor> {
             () => setState(() => _exported = false));
       },
     );
-  }
-
-  void _onSliderChangeStart(double value) async {
-    final position = _controller.videoPosition.inSeconds % 60;
-    final occuredValue = value + 0.25;
-    _controller.video.setPlaybackSpeed(occuredValue);
-    final path = widget.file.path;
-    print(path);
-    //await _playerController.pause();
-
-    ///cut
-    ///ffmpeg -i input.mp4 -t 4 slow.mp4
-    ///ffmpeg -i input.mp4 -ss 00:00:04 part-2.mp4
-    ///speed up
-    ///ffmpeg -i slow.mp4 -filter:v "setpts=0.5*PTS" part-1.mp4
-    ///concat
-    ///ffmpeg -f concat -i <(for f in ./part-*.mp4; do echo "file '$PWD/$f'"; done) -c copy output.mp4
-
-    // FFmpegKit.execute('-i file1.mp4 -c:v mpeg4 file2.mp4')
-    //     .then((session) async {
-    //   final returnCode = await session.getReturnCode();
-
-    //   if (ReturnCode.isSuccess(returnCode)) {
-    //     // SUCCESS
-
-    //   } else if (ReturnCode.isCancel(returnCode)) {
-    //     // CANCEL
-
-    //   } else {
-    //     // ERROR
-
-    //   }
-    // });
   }
 
   void _exportCover() async {
@@ -207,10 +195,11 @@ class _VideoEditorState extends State<VideoEditor> {
                             child: Column(
                               children: [
                                 CustomLineChart(
-                                  value: _currentSpeed,
+                                  points: spots,
+                                  speed: _currentSpeed,
                                 ),
                                 Slider(
-                                  onChangeStart: _onSliderChangeStart,
+                                  //onChangeStart: _onSliderChangeStart,
                                   inactiveColor: Colors.grey,
                                   activeColor: Colors.amber,
                                   value: _currentSpeed,
@@ -220,14 +209,16 @@ class _VideoEditorState extends State<VideoEditor> {
                                   onChanged: (newSpeed) => {
                                     setState(() {
                                       _currentSpeed = newSpeed;
-                                      final position =
-                                          _controller.videoPosition.inSeconds %
-                                              60;
                                       final occuredValue = newSpeed + 0.25;
                                       _controller.video
                                           .setPlaybackSpeed(occuredValue);
-                                      final path = widget.file.path;
-                                      print(path);
+                                      final indexSpot = _findSpotForChange();
+                                      spots[indexSpot] =
+                                          FlSpot(indexSpot * 5, newSpeed);
+
+                                      //_controller.video.
+                                      //final path = widget.file.path;
+                                      //print(path);
                                     })
                                   },
                                 ),
@@ -421,5 +412,12 @@ class _VideoEditorState extends State<VideoEditor> {
         ),
       ),
     );
+  }
+
+  int _findSpotForChange() {
+    final part = _controller.maxTrim / 16;
+    final attitude = _controller.trimPosition / part;
+
+    return (attitude % 16).truncate();
   }
 }
