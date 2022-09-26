@@ -2,6 +2,9 @@
 //VIDEO EDITOR SCREEN//
 //-------------------//
 import 'dart:io';
+// import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
+// import 'package:ffmpeg_kit_flutter/return_code.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:helpers/helpers/transition.dart';
 import 'package:slow_motion/video_editor/custom_line_chart.dart';
@@ -23,6 +26,26 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
   final _exportingProgress = ValueNotifier<double>(0.0);
   final _isExporting = ValueNotifier<bool>(false);
   final double height = 60;
+
+  List<FlSpot> spots = [
+    //FlSpot(0, widget.value),
+    FlSpot(0, 1),
+    FlSpot(5, 1),
+    FlSpot(10, 1),
+    FlSpot(15, 1),
+    FlSpot(20, 1),
+    FlSpot(25, 1),
+    FlSpot(30, 1),
+    FlSpot(35, 1),
+    FlSpot(40, 1),
+    FlSpot(45, 1),
+    FlSpot(50, 1),
+    FlSpot(55, 1),
+    FlSpot(60, 1),
+    FlSpot(65, 1),
+    FlSpot(70, 1),
+    FlSpot(75, 1),
+  ];
 
   double _currentSpeed = 1;
   bool _exported = false;
@@ -67,6 +90,7 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
         if (!mounted) return;
 
         _playerController = VideoPlayerController.file(file);
+
         _playerController.setPlaybackSpeed(0.3);
         _playerController.initialize().then((value) async {
           setState(() {});
@@ -94,18 +118,6 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
             () => setState(() => _exported = false));
       },
     );
-  }
-
-  void _onSliderChangeStart(double value) async {
-    final position = _controller.videoPosition.inSeconds % 60;
-    final file = _controller.file;
-    print(file.path);
-    print(position);
-    final occuredValue = value + 0.25;
-    _controller.video.setPlaybackSpeed(occuredValue);
-    final path = widget.file.path;
-    print(path);
-    //print(path);
   }
 
   void _exportCover() async {
@@ -182,10 +194,11 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
                             child: Column(
                               children: [
                                 CustomLineChart(
-                                  value: _currentSpeed,
+                                  points: spots,
+                                  speed: _currentSpeed,
                                 ),
                                 Slider(
-                                  onChangeStart: _onSliderChangeStart,
+                                  //onChangeStart: _onSliderChangeStart,
                                   inactiveColor: Colors.grey,
                                   activeColor: Colors.amber,
                                   value: _currentSpeed,
@@ -198,6 +211,11 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
                                       final occuredValue = newSpeed + 0.25;
                                       _controller.video
                                           .setPlaybackSpeed(occuredValue);
+                                      final indexSpot = _findSpotForChange();
+                                      spots[indexSpot] =
+                                          FlSpot(indexSpot * 5, newSpeed);
+
+                                      //_controller.video.
                                       //final path = widget.file.path;
                                       //print(path);
                                     })
@@ -393,5 +411,12 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
         ),
       ),
     );
+  }
+
+  int _findSpotForChange() {
+    final part = _controller.maxTrim / 16;
+    final attitude = _controller.trimPosition / part;
+
+    return (attitude % 16).truncate();
   }
 }
