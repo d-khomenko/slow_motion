@@ -2,6 +2,7 @@
 //VIDEO EDITOR SCREEN//
 //-------------------//
 // ignore_for_file: unused_local_variable
+import 'package:path/path.dart' as p;
 
 import 'dart:async';
 import 'dart:developer';
@@ -10,6 +11,9 @@ import 'package:ffmpeg_kit_flutter/media_information.dart';
 import 'package:ffmpeg_kit_flutter/media_information_session.dart';
 import 'package:ffmpeg_kit_flutter/session.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 //import 'package:video_edit_factory/video_edit_factory.dart';
 import 'package:video_edit_factory/video_factory/video_edit_factory.dart';
 import 'package:video_trimmer/video_trimmer.dart';
@@ -34,97 +38,130 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
 
   void asyncInit() async {
     print(widget.file.path);
-    // videos = await splitVideoToParts(
-    //   durationOfPartInSeconds: 3,
-    //   video: widget.file,
-    // );
-    // final tryToSpeed = videos.first;
-    // log(tryToSpeed);
-    //await changeSpeed(speed: 2, path: "part2.mov");
-    log(videos.toString());
-    //VideoManipulation.generateVideo([widget.file.path], "zdarova", 30, 2);
+    print(await widget.file.exists());
+    print((await widget.file.length()));
+
+    print(p.absolute(widget.file.path));
+    print(await _localPath);
+    var context = p.Context(style: Style.platform);
+  }
+
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+
+    return directory.path;
+  }
+
+  Future<int> readCounter() async {
+    try {
+      final file = await widget.file;
+
+      // Read the file
+      final contents = await file.readAsString();
+
+      return int.parse(contents);
+    } catch (e) {
+      // If encountering an error, return 0
+      return 0;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      body: ElevatedButton(
+          onPressed: changeSpeedVideo, child: const Text("get Battery Info")),
+    );
   }
-}
 
-Future<double> lengthOfVideo(String filePath) async {
-  VideoEditFactory timeVideoEditFactory =
-      new VideoEditFactory(inputPath: filePath);
-  double duration;
-  final c = Completer<double>();
+  static const videoChannel = const MethodChannel('video_manipulation');
 
-  await timeVideoEditFactory.getMediaInfo(executeCallback: (Session session) {
-    MediaInformationSession mediaInformationSession =
-        session as MediaInformationSession;
-    MediaInformation? mediaInformation =
-        mediaInformationSession.getMediaInformation();
-    final stringDuration = mediaInformation?.getDuration();
-    final t = double.tryParse(stringDuration ?? "") ?? 0;
-    duration = t;
-    c.complete(duration);
-  });
+  Future<void> changeSpeedVideo() async {
+    final outputPath = await videoChannel.invokeMethod("generateVideo", [
+      [
+        widget.file.path,
+      ],
+      "speeedy.mov",
+      24,
+      2.0
+    ]);
+  }
 
-  return c.future;
-}
+  Future<double> lengthOfVideo(String filePath) async {
+    VideoEditFactory timeVideoEditFactory =
+        new VideoEditFactory(inputPath: filePath);
+    double duration;
+    final c = Completer<double>();
 
-Future<List<String>> splitVideoToParts({
-  required int durationOfPartInSeconds,
-  required File video,
-}) async {
-  const millisecondsInSec = 1000;
+    await timeVideoEditFactory.getMediaInfo(executeCallback: (Session session) {
+      MediaInformationSession mediaInformationSession =
+          session as MediaInformationSession;
+      MediaInformation? mediaInformation =
+          mediaInformationSession.getMediaInformation();
+      final stringDuration = mediaInformation?.getDuration();
+      final t = double.tryParse(stringDuration ?? "") ?? 0;
+      duration = t;
+      c.complete(duration);
+    });
 
-  List<String> videosNames = [];
+    return c.future;
+  }
 
-  final length = await lengthOfVideo(video.path);
-  final countOfParts = length ~/ durationOfPartInSeconds;
-  final duration = millisecondsInSec * durationOfPartInSeconds;
+  Future<List<String>> splitVideoToParts({
+    required int durationOfPartInSeconds,
+    required File video,
+  }) async {
+    const millisecondsInSec = 1000;
 
-  for (var i = 0; i < countOfParts; i++) {
+    List<String> videosNames = [];
+
+    final length = await lengthOfVideo(video.path);
+    final countOfParts = length ~/ durationOfPartInSeconds;
+    final duration = millisecondsInSec * durationOfPartInSeconds;
+
+    for (var i = 0; i < countOfParts; i++) {
+      final Trimmer _trimmer = Trimmer();
+      await _trimmer.loadVideo(videoFile: video);
+      await _trimmer.saveTrimmedVideo(
+        videoFileName: "part$i",
+        startValue: (i * duration).toDouble(),
+        endValue: (i * duration + duration).toDouble(),
+        outputFormat: FileFormat.mov,
+        onSave: (outputPath) {
+          log(outputPath.toString());
+          videosNames.add(outputPath ?? "");
+        },
+      );
+      _trimmer.dispose();
+    }
+    return videosNames;
+  }
+
+  Future<String> changeSpeed({
+    required double speed,
+    required String path,
+  }) async {
+    const millisecondsInSec = 1000;
+    final c = Completer<String>();
+
+    final length = await lengthOfVideo(path);
+    final video = File(path);
+    String resultVideoPath = "";
     final Trimmer _trimmer = Trimmer();
     await _trimmer.loadVideo(videoFile: video);
     await _trimmer.saveTrimmedVideo(
-      videoFileName: "part$i",
-      startValue: (i * duration).toDouble(),
-      endValue: (i * duration + duration).toDouble(),
+      videoFileName: "speedi",
+      startValue: 0,
+      endValue: length,
       outputFormat: FileFormat.mov,
+      ffmpegCommand: 'setpts=0.5*PTS',
       onSave: (outputPath) {
         log(outputPath.toString());
-        videosNames.add(outputPath ?? "");
+        resultVideoPath = outputPath ?? "io";
+        c.complete(outputPath);
       },
     );
-    _trimmer.dispose();
+
+    return c.future;
   }
-  return videosNames;
-}
-
-Future<String> changeSpeed({
-  required double speed,
-  required String path,
-}) async {
-  const millisecondsInSec = 1000;
-  final c = Completer<String>();
-
-  final length = await lengthOfVideo(path);
-  final video = File(path);
-  String resultVideoPath = "";
-  final Trimmer _trimmer = Trimmer();
-  await _trimmer.loadVideo(videoFile: video);
-  await _trimmer.saveTrimmedVideo(
-    videoFileName: "speedi",
-    startValue: 0,
-    endValue: length,
-    outputFormat: FileFormat.mov,
-    ffmpegCommand: 'setpts=0.5*PTS',
-    onSave: (outputPath) {
-      log(outputPath.toString());
-      resultVideoPath = outputPath ?? "io";
-      c.complete(outputPath);
-    },
-  );
-
-  return c.future;
 }

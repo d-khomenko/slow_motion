@@ -66,7 +66,9 @@ private class VideoManipulation {
     static func generateImages(filePath: String, fps: Int, speed: Double) -> BufferedFrameProvider? {
         let fileUrl = URL(fileURLWithPath: filePath)
         let asset = AVURLAsset(url: fileUrl, options: nil)
+       
         let videoDuration = asset.duration
+        print(asset.tracks(withMediaType: .video))
         
         guard let frameSize = asset.tracks(withMediaType: .video).first?.naturalSize else { return nil }
         var frameForTimes = [NSValue]()
@@ -104,7 +106,7 @@ private class ImageToVideoGenerator {
                 return
             }
         }
-        let videoSettings:[String: Any] = [AVVideoCodecKey: AVVideoCodecH264,
+        let videoSettings:[String: Any] = [AVVideoCodecKey: AVVideoCodecType.h264,
                                            AVVideoWidthKey: Int(frameProvider.frameSize.width),
                                            AVVideoHeightKey: Int(frameProvider.frameSize.height)]
         let outputFileUrl = URL(fileURLWithPath: outputFilePath)
