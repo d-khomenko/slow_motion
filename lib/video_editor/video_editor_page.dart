@@ -1,9 +1,7 @@
 //-------------------//
 //VIDEO EDITOR SCREEN//
 //-------------------//
-// ignore_for_file: unused_local_variable
 import 'package:path/path.dart' as p;
-
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
@@ -12,9 +10,7 @@ import 'package:ffmpeg_kit_flutter/media_information_session.dart';
 import 'package:ffmpeg_kit_flutter/session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-//import 'package:video_edit_factory/video_edit_factory.dart';
 import 'package:video_edit_factory/video_factory/video_edit_factory.dart';
 import 'package:video_trimmer/video_trimmer.dart';
 
@@ -38,12 +34,35 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
 
   void asyncInit() async {
     print(widget.file.path);
-    print(await widget.file.exists());
-    print((await widget.file.length()));
-
     print(p.absolute(widget.file.path));
     print(await _localPath);
-    var context = p.Context(style: Style.platform);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: changeSpeedVideo,
+              child: const Text("change speed video (platform version)"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                changeSpeed(path: widget.file.path, speed: 3.0);
+              },
+              child: Text("change speed video ffmpeg"),
+            ),
+            ElevatedButton(
+              onPressed: (() => print(_localPath)),
+              child: Text("get path"),
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   Future<String> get _localPath async {
@@ -52,31 +71,9 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
     return directory.path;
   }
 
-  Future<int> readCounter() async {
-    try {
-      final file = await widget.file;
-
-      // Read the file
-      final contents = await file.readAsString();
-
-      return int.parse(contents);
-    } catch (e) {
-      // If encountering an error, return 0
-      return 0;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: ElevatedButton(
-          onPressed: changeSpeedVideo, child: const Text("get Battery Info")),
-    );
-  }
-
   static const videoChannel = const MethodChannel('video_manipulation');
 
-  Future<void> changeSpeedVideo() async {
+  Future<String> changeSpeedVideo() async {
     final outputPath = await videoChannel.invokeMethod("generateVideo", [
       [
         widget.file.path,
@@ -85,6 +82,7 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
       24,
       2.0
     ]);
+    return outputPath;
   }
 
   Future<double> lengthOfVideo(String filePath) async {
@@ -141,9 +139,8 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
     required double speed,
     required String path,
   }) async {
-    const millisecondsInSec = 1000;
     final c = Completer<String>();
-
+    log(path);
     final length = await lengthOfVideo(path);
     final video = File(path);
     String resultVideoPath = "";
@@ -152,9 +149,10 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
     await _trimmer.saveTrimmedVideo(
       videoFileName: "speedi",
       startValue: 0,
-      endValue: length,
+      endValue: length * 100 - 0.5,
       outputFormat: FileFormat.mov,
       ffmpegCommand: 'setpts=0.5*PTS',
+      customVideoFormat: ".mov",
       onSave: (outputPath) {
         log(outputPath.toString());
         resultVideoPath = outputPath ?? "io";

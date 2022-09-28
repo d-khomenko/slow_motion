@@ -69,6 +69,10 @@ private class VideoManipulation {
        
         let videoDuration = asset.duration
         print(asset.tracks(withMediaType: .video))
+        let audioTracks = asset.tracks(withMediaType: .audio).first
+        let newAudioTrack = 
+            
+        print(audioTracks)
         
         guard let frameSize = asset.tracks(withMediaType: .video).first?.naturalSize else { return nil }
         var frameForTimes = [NSValue]()
