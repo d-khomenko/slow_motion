@@ -185,84 +185,94 @@ class _VideoEditorPageState extends State<ChangeSpeedScreen> {
                               CoverViewer(controller: _controller)
                             ],
                           )),
-                          Container(
-                            height: 240,
-                            color: Color(0xFF646161),
-                            child: Column(
-                              children: [
-                                CustomLineChart(
-                                  points: graphicSpots,
-                                  speed: _currentSpeed,
-                                ),
-                                SliderTheme(
-                                  data: SliderThemeData(
-                                    trackHeight: 1.0,
+                          Expanded(
+                            child: Container(
+                              color: Color(0xFF646161),
+                              child: Column(
+                                children: [
+                                  CustomLineChart(
+                                    points: graphicSpots,
+                                    speed: _currentSpeed,
                                   ),
-                                  child: Slider(
-                                    inactiveColor: Colors.grey,
-                                    activeColor: Colors.amber,
-                                    value: _currentSpeed,
-                                    min: 0,
-                                    max: 2,
-                                    divisions: 20,
-                                    onChanged: (newSpeed) => {
-                                      setState(() {
-                                        _currentSpeed = newSpeed;
-                                        final occuredValue = newSpeed + 0.25;
-                                        _controller.video
-                                            .setPlaybackSpeed(occuredValue);
-                                        final indexSpot = _findSpotForChange();
-                                        graphicSpots[indexSpot] =
-                                            FlSpot(indexSpot * 5, newSpeed);
-                                      })
-                                    },
+                                  SliderTheme(
+                                    data: SliderThemeData(
+                                      trackHeight: 1.0,
+                                    ),
+                                    child: Slider(
+                                      inactiveColor: Colors.grey,
+                                      activeColor: Colors.amber,
+                                      value: _currentSpeed,
+                                      min: 0,
+                                      max: 2,
+                                      divisions: 20,
+                                      onChanged: (newSpeed) => {
+                                        setState(() {
+                                          _currentSpeed = newSpeed;
+                                          final occuredValue = newSpeed + 0.25;
+                                          _controller.video
+                                              .setPlaybackSpeed(occuredValue);
+                                          final indexSpot =
+                                              _findSpotForChange();
+                                          graphicSpots[indexSpot] =
+                                              FlSpot(indexSpot * 5, newSpeed);
+                                        })
+                                      },
+                                    ),
                                   ),
-                                ),
-                              ],
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text("123"),
+                                      Text("123"),
+                                    ],
+                                  )
+                                ],
+                              ),
                             ),
                           ),
-                          Container(
-                              height: 170,
-                              margin: const EdgeInsets.only(top: 10),
-                              child: Column(children: [
-                                TabBar(
-                                  indicatorColor: Colors.white,
-                                  tabs: [
-                                    Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: const [
-                                          Padding(
-                                              padding: EdgeInsets.all(5),
-                                              child: Icon(Icons.content_cut)),
-                                          Text('Trim')
-                                        ]),
-                                    Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: const [
-                                          Padding(
-                                              padding: EdgeInsets.all(5),
-                                              child: Icon(Icons.video_label)),
-                                          Text('Cover')
-                                        ]),
-                                  ],
-                                ),
-                                Expanded(
-                                  child: TabBarView(
-                                    children: [
-                                      Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: _trimSlider()),
-                                      Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [_coverSelection()]),
-                                    ],
-                                  ),
-                                )
-                              ])),
+                          // Container(
+                          //     height: 170,
+                          //     margin: const EdgeInsets.only(top: 10),
+                          //     child: Column(children: [
+                          //       TabBar(
+                          //         indicatorColor: Colors.white,
+                          //         tabs: [
+                          //           Row(
+                          //               mainAxisAlignment:
+                          //                   MainAxisAlignment.center,
+                          //               children: const [
+                          //                 Padding(
+                          //                     padding: EdgeInsets.all(5),
+                          //                     child: Icon(Icons.content_cut)),
+                          //                 Text('Trim')
+                          //               ]),
+                          //           Row(
+                          //               mainAxisAlignment:
+                          //                   MainAxisAlignment.center,
+                          //               children: const [
+                          //                 Padding(
+                          //                     padding: EdgeInsets.all(5),
+                          //                     child: Icon(Icons.video_label)),
+                          //                 Text('Cover')
+                          //               ]),
+                          //         ],
+                          //       ),
+                          //       Expanded(
+                          //         child: TabBarView(
+                          //           children: [
+                          //             Column(
+                          //                 mainAxisAlignment:
+                          //                     MainAxisAlignment.center,
+                          //                 children: _trimSlider()),
+                          //             Column(
+                          //                 mainAxisAlignment:
+                          //                     MainAxisAlignment.center,
+                          //                 children: [_coverSelection()]),
+                          //           ],
+                          //         ),
+                          //       )
+                          //     ])),
                           _customSnackBar(),
                           ValueListenableBuilder(
                             valueListenable: _isExporting,
