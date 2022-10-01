@@ -9,10 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:helpers/helpers/transition.dart';
 import 'package:slow_motion/video_editor/custom_line_chart.dart';
-//import 'package:video_edit_factory/video_factory/video_edit_factory.dart';
 import 'package:video_editor/video_editor.dart';
 import 'package:video_player/video_player.dart';
-//import 'package:video_trimmer/video_trimmer.dart';
 import 'crop_screen.dart';
 
 class VideoEditorPage extends StatefulWidget {
@@ -28,25 +26,6 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
   final _exportingProgress = ValueNotifier<double>(0.0);
   final _isExporting = ValueNotifier<bool>(false);
   final double height = 60;
-
-  List<FlSpot> graphicSpots = [
-    FlSpot(0, 1),
-    FlSpot(5, 1),
-    FlSpot(10, 1),
-    FlSpot(15, 1),
-    FlSpot(20, 1),
-    FlSpot(25, 1),
-    FlSpot(30, 1),
-    FlSpot(35, 1),
-    FlSpot(40, 1),
-    FlSpot(45, 1),
-    FlSpot(50, 1),
-    FlSpot(55, 1),
-    FlSpot(60, 1),
-    FlSpot(65, 1),
-    FlSpot(70, 1),
-    FlSpot(75, 1),
-  ];
 
   double _currentSpeed = 1;
   bool _exported = false;
@@ -187,42 +166,7 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
                               CoverViewer(controller: _controller)
                             ],
                           )),
-                          Container(
-                            height: 240,
-                            color: Color(0xFF646161),
-                            child: Column(
-                              children: [
-                                CustomLineChart(
-                                  points: graphicSpots,
-                                  speed: _currentSpeed,
-                                ),
-                                SliderTheme(
-                                  data: SliderThemeData(
-                                    trackHeight: 1.0,
-                                  ),
-                                  child: Slider(
-                                    inactiveColor: Colors.grey,
-                                    activeColor: Colors.amber,
-                                    value: _currentSpeed,
-                                    min: 0,
-                                    max: 2,
-                                    divisions: 20,
-                                    onChanged: (newSpeed) => {
-                                      setState(() {
-                                        _currentSpeed = newSpeed;
-                                        final occuredValue = newSpeed + 0.25;
-                                        _controller.video
-                                            .setPlaybackSpeed(occuredValue);
-                                        final indexSpot = _findSpotForChange();
-                                        graphicSpots[indexSpot] =
-                                            FlSpot(indexSpot * 5, newSpeed);
-                                      })
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                        
                           Container(
                               height: 170,
                               margin: const EdgeInsets.only(top: 10),
