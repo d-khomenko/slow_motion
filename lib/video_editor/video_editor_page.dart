@@ -2,6 +2,7 @@
 //VIDEO EDITOR SCREEN//
 //-------------------//
 import 'dart:async';
+
 import 'dart:io';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -418,66 +419,6 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
     return (attitude % 16).truncate();
   }
 
-  static const videoChannel = const MethodChannel('video_manipulation');
-
-  Future<void> changeSpeedVideo() async {
-    final outputPath = await videoChannel.invokeMethod("generateVideo", [
-      [
-        widget.file.path,
-      ],
-      "speeedy.mov",
-      24,
-      2.0
-    ]);
-  }
 }
 
-// Future<double> lengthOfVideo(String filePath) async {
-//   VideoEditFactory timeVideoEditFactory =
-//       new VideoEditFactory(inputPath: filePath);
-//   double duration;
-//   final c = Completer<double>();
 
-//   await timeVideoEditFactory.getMediaInfo(executeCallback: (Session session) {
-//     MediaInformationSession mediaInformationSession =
-//         session as MediaInformationSession;
-//     MediaInformation? mediaInformation =
-//         mediaInformationSession.getMediaInformation();
-//     final stringDuration = mediaInformation?.getDuration();
-//     final t = double.tryParse(stringDuration ?? "") ?? 0;
-//     duration = t;
-//     c.complete(duration);
-//   });
-
-//   return c.future;
-// }
-
-// Future<List<String>> splitVideoToParts({
-//   required int durationOfPartInSeconds,
-//   required File video,
-// }) async {
-//   const millisecondsInSec = 1000;
-
-//   List<String> videosNames = [];
-
-//   final length = 123; //await lengthOfVideo(video.path);
-//   final countOfParts = length ~/ durationOfPartInSeconds;
-//   final duration = millisecondsInSec * durationOfPartInSeconds;
-
-//   for (var i = 0; i < countOfParts; i++) {
-//     final Trimmer _trimmer = Trimmer();
-//     await _trimmer.loadVideo(videoFile: video);
-//     await _trimmer.saveTrimmedVideo(
-//       videoFileName: "part$i",
-//       startValue: (i * duration).toDouble(),
-//       endValue: (i * duration + duration).toDouble(),
-//       outputFormat: FileFormat.mov,
-//       onSave: (outputPath) {
-//         log(outputPath.toString());
-//         videosNames.add(outputPath ?? "");
-//       },
-//     );
-//     _trimmer.dispose();
-//   }
-//   return videosNames;
-// }
