@@ -1,16 +1,17 @@
 //-------------------//
 //VIDEO EDITOR SCREEN//
 //-------------------//
+import 'dart:async';
 import 'dart:io';
-// import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
-// import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:helpers/helpers/transition.dart';
 import 'package:slow_motion/video_editor/custom_line_chart.dart';
+//import 'package:video_edit_factory/video_factory/video_edit_factory.dart';
 import 'package:video_editor/video_editor.dart';
 import 'package:video_player/video_player.dart';
-
+//import 'package:video_trimmer/video_trimmer.dart';
 import 'crop_screen.dart';
 
 class VideoEditorPage extends StatefulWidget {
@@ -27,8 +28,7 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
   final _isExporting = ValueNotifier<bool>(false);
   final double height = 60;
 
-  List<FlSpot> spots = [
-    //FlSpot(0, widget.value),
+  List<FlSpot> graphicSpots = [
     FlSpot(0, 1),
     FlSpot(5, 1),
     FlSpot(10, 1),
@@ -79,7 +79,6 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
   void _exportVideo() async {
     _exportingProgress.value = 0;
     _isExporting.value = true;
-    // NOTE: To use `-crf 1` and [VideoExportPreset] you need `ffmpeg_kit_flutter_min_gpl` package (with `ffmpeg_kit` only it won't work)
     await _controller.exportVideo(
       // preset: VideoExportPreset.medium,
       // customInstruction: "-crf 17",
@@ -90,7 +89,6 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
         if (!mounted) return;
 
         _playerController = VideoPlayerController.file(file);
-
         _playerController.setPlaybackSpeed(0.3);
         _playerController.initialize().then((value) async {
           setState(() {});
@@ -189,37 +187,37 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
                             ],
                           )),
                           Container(
-                            height: 220,
+                            height: 240,
                             color: Color(0xFF646161),
                             child: Column(
                               children: [
                                 CustomLineChart(
-                                  points: spots,
+                                  points: graphicSpots,
                                   speed: _currentSpeed,
                                 ),
-                                Slider(
-                                  //onChangeStart: _onSliderChangeStart,
-                                  inactiveColor: Colors.grey,
-                                  activeColor: Colors.amber,
-                                  value: _currentSpeed,
-                                  min: 0,
-                                  max: 2,
-                                  divisions: 20,
-                                  onChanged: (newSpeed) => {
-                                    setState(() {
-                                      _currentSpeed = newSpeed;
-                                      final occuredValue = newSpeed + 0.25;
-                                      _controller.video
-                                          .setPlaybackSpeed(occuredValue);
-                                      final indexSpot = _findSpotForChange();
-                                      spots[indexSpot] =
-                                          FlSpot(indexSpot * 5, newSpeed);
-
-                                      //_controller.video.
-                                      //final path = widget.file.path;
-                                      //print(path);
-                                    })
-                                  },
+                                SliderTheme(
+                                  data: SliderThemeData(
+                                    trackHeight: 1.0,
+                                  ),
+                                  child: Slider(
+                                    inactiveColor: Colors.grey,
+                                    activeColor: Colors.amber,
+                                    value: _currentSpeed,
+                                    min: 0,
+                                    max: 2,
+                                    divisions: 20,
+                                    onChanged: (newSpeed) => {
+                                      setState(() {
+                                        _currentSpeed = newSpeed;
+                                        final occuredValue = newSpeed + 0.25;
+                                        _controller.video
+                                            .setPlaybackSpeed(occuredValue);
+                                        final indexSpot = _findSpotForChange();
+                                        graphicSpots[indexSpot] =
+                                            FlSpot(indexSpot * 5, newSpeed);
+                                      })
+                                    },
+                                  ),
                                 ),
                               ],
                             ),
@@ -419,4 +417,67 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
 
     return (attitude % 16).truncate();
   }
+
+  static const videoChannel = const MethodChannel('video_manipulation');
+
+  Future<void> changeSpeedVideo() async {
+    final outputPath = await videoChannel.invokeMethod("generateVideo", [
+      [
+        widget.file.path,
+      ],
+      "speeedy.mov",
+      24,
+      2.0
+    ]);
+  }
 }
+
+// Future<double> lengthOfVideo(String filePath) async {
+//   VideoEditFactory timeVideoEditFactory =
+//       new VideoEditFactory(inputPath: filePath);
+//   double duration;
+//   final c = Completer<double>();
+
+//   await timeVideoEditFactory.getMediaInfo(executeCallback: (Session session) {
+//     MediaInformationSession mediaInformationSession =
+//         session as MediaInformationSession;
+//     MediaInformation? mediaInformation =
+//         mediaInformationSession.getMediaInformation();
+//     final stringDuration = mediaInformation?.getDuration();
+//     final t = double.tryParse(stringDuration ?? "") ?? 0;
+//     duration = t;
+//     c.complete(duration);
+//   });
+
+//   return c.future;
+// }
+
+// Future<List<String>> splitVideoToParts({
+//   required int durationOfPartInSeconds,
+//   required File video,
+// }) async {
+//   const millisecondsInSec = 1000;
+
+//   List<String> videosNames = [];
+
+//   final length = 123; //await lengthOfVideo(video.path);
+//   final countOfParts = length ~/ durationOfPartInSeconds;
+//   final duration = millisecondsInSec * durationOfPartInSeconds;
+
+//   for (var i = 0; i < countOfParts; i++) {
+//     final Trimmer _trimmer = Trimmer();
+//     await _trimmer.loadVideo(videoFile: video);
+//     await _trimmer.saveTrimmedVideo(
+//       videoFileName: "part$i",
+//       startValue: (i * duration).toDouble(),
+//       endValue: (i * duration + duration).toDouble(),
+//       outputFormat: FileFormat.mov,
+//       onSave: (outputPath) {
+//         log(outputPath.toString());
+//         videosNames.add(outputPath ?? "");
+//       },
+//     );
+//     _trimmer.dispose();
+//   }
+//   return videosNames;
+// }

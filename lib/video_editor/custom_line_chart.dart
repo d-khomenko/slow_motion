@@ -19,7 +19,7 @@ class CustomLineChart extends StatefulWidget {
 class _CustomLineChartState extends State<CustomLineChart> {
   List<Color> gradientColors = [
     Color.fromARGB(255, 246, 210, 4),
-    Color.fromARGB(255, 238, 225, 85),
+    Color.fromARGB(152, 238, 225, 85),
   ];
 
   bool showAvg = false;
@@ -96,8 +96,8 @@ class _CustomLineChartState extends State<CustomLineChart> {
 
   Widget leftTitleWidgets(double value, TitleMeta meta) {
     const style = TextStyle(
-      color: Colors.white,
-      fontWeight: FontWeight.bold,
+      color: Colors.yellow,
+      fontWeight: FontWeight.normal,
       fontSize: 11,
     );
     String text;
@@ -148,7 +148,7 @@ class _CustomLineChartState extends State<CustomLineChart> {
         ),
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
-            showTitles: true,
+            showTitles: false,
             reservedSize: 30,
             interval: 1,
             getTitlesWidget: bottomTitleWidgets,
@@ -164,8 +164,9 @@ class _CustomLineChartState extends State<CustomLineChart> {
         ),
       ),
       borderData: FlBorderData(
-          show: false,
-          border: Border.all(color: const Color(0xff37434d), width: 1)),
+        show: false,
+        border: Border.all(color: const Color(0xff37434d), width: 1),
+      ),
       minX: 0,
       maxX: 75,
       minY: 0,
@@ -179,7 +180,7 @@ class _CustomLineChartState extends State<CustomLineChart> {
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
-          barWidth: 5,
+          barWidth: 1,
           isStrokeCapRound: false,
           dotData: FlDotData(
             show: false,
