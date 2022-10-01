@@ -5,6 +5,8 @@ import 'dart:async';
 
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:helpers/helpers/transition.dart';
 import 'package:video_editor/video_editor.dart';
 import 'package:video_player/video_player.dart';
@@ -133,42 +135,33 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
                           length: 2,
                           child: Column(
                             children: [
-                              Expanded(
-                                child: TabBarView(
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  children: [
-                                    Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        CropGridViewer(
-                                          controller: _controller,
-                                          showGrid: false,
-                                        ),
-                                        AnimatedBuilder(
-                                          animation: _controller.video,
-                                          builder: (_, __) => OpacityTransition(
-                                            visible: !_controller.isPlaying,
-                                            child: GestureDetector(
-                                              onTap: _controller.video.play,
-                                              child: Container(
-                                                width: 40,
-                                                height: 40,
-                                                decoration: const BoxDecoration(
-                                                  color: Colors.white,
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                child: const Icon(
-                                                    Icons.play_arrow,
-                                                    color: Colors.black),
-                                              ),
-                                            ),
+                              Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  CropGridViewer(
+                                    controller: _controller,
+                                    showGrid: false,
+                                  ),
+                                  AnimatedBuilder(
+                                    animation: _controller.video,
+                                    builder: (_, __) => OpacityTransition(
+                                      visible: !_controller.isPlaying,
+                                      child: GestureDetector(
+                                        onTap: _controller.video.play,
+                                        child: Container(
+                                          width: 40,
+                                          height: 40,
+                                          decoration: const BoxDecoration(
+                                            color: Colors.white,
+                                            shape: BoxShape.circle,
                                           ),
+                                          child: const Icon(Icons.play_arrow,
+                                              color: Colors.black),
                                         ),
-                                      ],
+                                      ),
                                     ),
-                                    CoverViewer(controller: _controller)
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                               _EditButtonsRowWidgets(),
                               Container(
@@ -296,7 +289,7 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
             padding: EdgeInsets.symmetric(horizontal: height / 4),
             child: Row(
               children: [
-                Text(formatter(Duration(seconds: pos.toInt()))),
+                //Text(formatter(Duration(seconds: pos.toInt()))),
                 const Expanded(child: SizedBox()),
                 OpacityTransition(
                   visible: _controller.isTrimming,
@@ -321,10 +314,6 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
           controller: _controller,
           height: height,
           horizontalMargin: height / 4,
-          child: TrimTimeline(
-            controller: _controller,
-            margin: const EdgeInsets.only(top: 10),
-          ),
         ),
       )
     ];
@@ -355,7 +344,7 @@ class TopButtonsRow extends StatelessWidget {
         children: [
           TextButton(
             onPressed: () => {},
-            child: Text("Back",
+            child: Text("Cancel",
                 style: TextStyle(
                   fontSize: 17,
                   color: Colors.white,
@@ -365,7 +354,7 @@ class TopButtonsRow extends StatelessWidget {
           TextButton(
             onPressed: () => {},
             child: Text(
-              "Save",
+              "Done",
               style: TextStyle(
                 fontSize: 17,
                 color: Color(0xFFFEDE34),
@@ -389,10 +378,78 @@ class _EditButtonsRowWidgets extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(onPressed: () => {}, icon: Icon(Icons.ac_unit_sharp)),
-          IconButton(onPressed: () => {}, icon: Icon(Icons.ac_unit_sharp)),
-          IconButton(onPressed: () => {}, icon: Icon(Icons.ac_unit_sharp)),
-          IconButton(onPressed: () => {}, icon: Icon(Icons.ac_unit_sharp))
+          Column(
+            children: [
+              IconButton(
+                icon: SvgPicture.asset("lib/assets/icons/split.svg",
+                    color: Colors.yellow, semanticsLabel: '1'),
+                onPressed: () {},
+              ),
+              Text(
+                "Split",
+                style: GoogleFonts.nunitoSans(
+                  textStyle: TextStyle(
+                    color: Colors.white,
+                  ),
+                  fontWeight: FontWeight.w600,
+                ),
+              )
+            ],
+          ),
+          Column(
+            children: [
+              IconButton(
+                icon: SvgPicture.asset("lib/assets/icons/speed.svg",
+                    color: Colors.yellow, semanticsLabel: '2'),
+                onPressed: () {},
+              ),
+              Text(
+                "Adjust Speed",
+                style: GoogleFonts.nunitoSans(
+                  textStyle: TextStyle(
+                    color: Colors.white,
+                  ),
+                  fontWeight: FontWeight.w600,
+                ),
+              )
+            ],
+          ),
+          Column(
+            children: [
+              IconButton(
+                icon: SvgPicture.asset("lib/assets/icons/mute.svg",
+                    color: Colors.yellow, semanticsLabel: '3'),
+                onPressed: () {},
+              ),
+              Text(
+                "Volume",
+                style: GoogleFonts.nunitoSans(
+                  textStyle: TextStyle(
+                    color: Colors.white,
+                  ),
+                  fontWeight: FontWeight.w600,
+                ),
+              )
+            ],
+          ),
+          Column(
+            children: [
+              IconButton(
+                icon: SvgPicture.asset("lib/assets/icons/delete.svg",
+                    color: Colors.yellow, semanticsLabel: '4'),
+                onPressed: () {},
+              ),
+              Text(
+                "Delete",
+                style: GoogleFonts.nunitoSans(
+                  textStyle: TextStyle(
+                    color: Colors.white,
+                  ),
+                  fontWeight: FontWeight.w600,
+                ),
+              )
+            ],
+          ),
         ],
       ),
     );
