@@ -1,15 +1,17 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 //-------------------//
 //VIDEO EDITOR SCREEN//
 //-------------------//
 import 'dart:async';
-
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:helpers/helpers/transition.dart';
 import 'package:video_editor/video_editor.dart';
 import 'package:video_player/video_player.dart';
+
 import 'crop_screen.dart';
 
 class VideoEditorPage extends StatefulWidget {
@@ -55,45 +57,45 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
           builder: (BuildContext context) =>
               CropScreen(controller: _controller)));
 
-  void _exportVideo() async {
-    _exportingProgress.value = 0;
-    _isExporting.value = true;
-    await _controller.exportVideo(
-      onProgress: (stats, value) => _exportingProgress.value = value,
-      onError: (e, s) => _exportText = "Error on export video :(",
-      onCompleted: (file) {
-        _isExporting.value = false;
-        if (!mounted) return;
+  // void _exportVideo() async {
+  //   _exportingProgress.value = 0;
+  //   _isExporting.value = true;
+  //   await _controller.exportVideo(
+  //     onProgress: (stats, value) => _exportingProgress.value = value,
+  //     onError: (e, s) => _exportText = "Error on export video :(",
+  //     onCompleted: (file) {
+  //       _isExporting.value = false;
+  //       if (!mounted) return;
 
-        _playerController = VideoPlayerController.file(file);
-        _playerController.setPlaybackSpeed(0.3);
-        _playerController.initialize().then((value) async {
-          setState(() {});
-          _playerController.play();
-          _playerController.setLooping(true);
-          await showDialog(
-            context: context,
-            builder: (_) => Padding(
-              padding: const EdgeInsets.all(30),
-              child: Center(
-                child: AspectRatio(
-                  aspectRatio: _playerController.value.aspectRatio,
-                  child: VideoPlayer(_playerController),
-                ),
-              ),
-            ),
-          );
-          await _playerController.pause();
-          _playerController.dispose();
-        });
+  //       _playerController = VideoPlayerController.file(file);
+  //       _playerController.setPlaybackSpeed(0.3);
+  //       _playerController.initialize().then((value) async {
+  //         setState(() {});
+  //         _playerController.play();
+  //         _playerController.setLooping(true);
+  //         await showDialog(
+  //           context: context,
+  //           builder: (_) => Padding(
+  //             padding: const EdgeInsets.all(30),
+  //             child: Center(
+  //               child: AspectRatio(
+  //                 aspectRatio: _playerController.value.aspectRatio,
+  //                 child: VideoPlayer(_playerController),
+  //               ),
+  //             ),
+  //           ),
+  //         );
+  //         await _playerController.pause();
+  //         _playerController.dispose();
+  //       });
 
-        _exportText = "Video success export!";
-        setState(() => _exported = true);
-        Future.delayed(const Duration(seconds: 2),
-            () => setState(() => _exported = false));
-      },
-    );
-  }
+  //       _exportText = "Video success export!";
+  //       setState(() => _exported = true);
+  //       Future.delayed(const Duration(seconds: 2),
+  //           () => setState(() => _exported = false));
+  //     },
+  //   );
+  // }
 
   void _exportCover() async {
     setState(() => _exported = false);
@@ -163,7 +165,9 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
                                   ),
                                 ],
                               ),
-                              _EditButtonsRowWidgets(),
+                              _EditButtonsRowWidgets(
+                                controller: _controller,
+                              ),
                               Container(
                                 height: 170,
                                 margin: const EdgeInsets.only(top: 10),
@@ -258,12 +262,12 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
                 icon: const Icon(Icons.save_alt, color: Colors.white),
               ),
             ),
-            Expanded(
-              child: IconButton(
-                onPressed: _exportVideo,
-                icon: const Icon(Icons.save),
-              ),
-            ),
+            // Expanded(
+            //   child: IconButton(
+            //     onPressed: _exportVideo,
+            //     icon: const Icon(Icons.save),
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -369,7 +373,13 @@ class TopButtonsRow extends StatelessWidget {
 }
 
 class _EditButtonsRowWidgets extends StatelessWidget {
-  const _EditButtonsRowWidgets({super.key});
+  late VideoEditorController controller;
+  bool flag = true;
+
+  _EditButtonsRowWidgets({
+    Key? key,
+    required this.controller,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -419,10 +429,18 @@ class _EditButtonsRowWidgets extends StatelessWidget {
               IconButton(
                 icon: SvgPicture.asset("lib/assets/icons/mute.svg",
                     color: Colors.yellow, semanticsLabel: '3'),
-                onPressed: () {},
+                onPressed: () {
+                  if (flag) {
+                    controller.video.setVolume(0);
+                    flag = !flag;
+                  } else {
+                    controller.video.setVolume(1.0);
+                    flag = !flag;
+                  }
+                },
               ),
               Text(
-                "Volume",
+                "Mute",
                 style: GoogleFonts.nunitoSans(
                   textStyle: TextStyle(
                     color: Colors.white,
