@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:helpers/helpers/transition.dart';
+import 'package:slow_motion/video_editor/change_speed_screen.dart';
 import 'package:video_editor/video_editor.dart';
 import 'package:video_player/video_player.dart';
 
@@ -166,6 +167,8 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
                                 ],
                               ),
                               _EditButtonsRowWidgets(
+                                file: widget.file,
+                                flag: true,
                                 controller: _controller,
                               ),
                               Container(
@@ -374,11 +377,14 @@ class TopButtonsRow extends StatelessWidget {
 
 class _EditButtonsRowWidgets extends StatelessWidget {
   late VideoEditorController controller;
+  File file;
   bool flag = true;
 
   _EditButtonsRowWidgets({
     Key? key,
     required this.controller,
+    required this.file,
+    required this.flag,
   }) : super(key: key);
 
   @override
@@ -411,7 +417,15 @@ class _EditButtonsRowWidgets extends StatelessWidget {
               IconButton(
                 icon: SvgPicture.asset("lib/assets/icons/speed.svg",
                     color: Colors.yellow, semanticsLabel: '2'),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (BuildContext context) =>
+                          ChangeSpeedScreen(file: file),
+                    ),
+                  );
+                },
               ),
               Text(
                 "Adjust Speed",
