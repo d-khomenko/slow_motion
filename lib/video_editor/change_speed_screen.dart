@@ -231,48 +231,6 @@ class _VideoEditorPageState extends State<ChangeSpeedScreen> {
                               ),
                             ),
                           ),
-                          // Container(
-                          //     height: 170,
-                          //     margin: const EdgeInsets.only(top: 10),
-                          //     child: Column(children: [
-                          //       TabBar(
-                          //         indicatorColor: Colors.white,
-                          //         tabs: [
-                          //           Row(
-                          //               mainAxisAlignment:
-                          //                   MainAxisAlignment.center,
-                          //               children: const [
-                          //                 Padding(
-                          //                     padding: EdgeInsets.all(5),
-                          //                     child: Icon(Icons.content_cut)),
-                          //                 Text('Trim')
-                          //               ]),
-                          //           Row(
-                          //               mainAxisAlignment:
-                          //                   MainAxisAlignment.center,
-                          //               children: const [
-                          //                 Padding(
-                          //                     padding: EdgeInsets.all(5),
-                          //                     child: Icon(Icons.video_label)),
-                          //                 Text('Cover')
-                          //               ]),
-                          //         ],
-                          //       ),
-                          //       Expanded(
-                          //         child: TabBarView(
-                          //           children: [
-                          //             Column(
-                          //                 mainAxisAlignment:
-                          //                     MainAxisAlignment.center,
-                          //                 children: _trimSlider()),
-                          //             Column(
-                          //                 mainAxisAlignment:
-                          //                     MainAxisAlignment.center,
-                          //                 children: [_coverSelection()]),
-                          //           ],
-                          //         ),
-                          //       )
-                          //     ])),
                           _customSnackBar(),
                           ValueListenableBuilder(
                             valueListenable: _isExporting,
