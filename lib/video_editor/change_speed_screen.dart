@@ -1,3 +1,4 @@
+import 'package:chart_sparkline/chart_sparkline.dart';
 import 'package:flutter/material.dart';
 
 //-------------------//
@@ -5,10 +6,7 @@ import 'package:flutter/material.dart';
 //-------------------//
 import 'dart:async';
 import 'dart:io';
-import 'package:fl_chart/fl_chart.dart';
-
 import 'package:helpers/helpers/transition.dart';
-import 'package:slow_motion/video_editor/custom_line_chart.dart';
 import 'package:video_editor/video_editor.dart';
 import 'package:video_player/video_player.dart';
 import 'crop_screen.dart';
@@ -27,24 +25,7 @@ class _VideoEditorPageState extends State<ChangeSpeedScreen> {
   final _isExporting = ValueNotifier<bool>(false);
   final double height = 60;
 
-  List<FlSpot> graphicSpots = [
-    FlSpot(0, 1),
-    FlSpot(5, 1),
-    FlSpot(10, 1),
-    FlSpot(15, 1),
-    FlSpot(20, 1),
-    FlSpot(25, 1),
-    FlSpot(30, 1),
-    FlSpot(35, 1),
-    FlSpot(40, 1),
-    FlSpot(45, 1),
-    FlSpot(50, 1),
-    FlSpot(55, 1),
-    FlSpot(60, 1),
-    FlSpot(65, 1),
-    FlSpot(70, 1),
-    FlSpot(75, 1),
-  ];
+  var data = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
 
   double _currentSpeed = 1;
   bool _exported = false;
@@ -142,119 +123,165 @@ class _VideoEditorPageState extends State<ChangeSpeedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<Color> gradientColors = [
+      Color(0xFF4A452D),
+      Color(0xFF2C2B2B),
+    ];
+
     return Scaffold(
-      backgroundColor: const Color(0xFF646161),
+      backgroundColor: const Color(0xFF2C2B2B),
       body: _controller.initialized
           ? SafeArea(
-              child: Stack(children: [
-              Column(children: [
-                _topNavBar(),
-                Expanded(
-                    child: DefaultTabController(
-                        length: 2,
-                        child: Column(children: [
-                          Expanded(
-                              child: TabBarView(
-                            physics: const NeverScrollableScrollPhysics(),
+              child: Stack(
+                children: [
+                  Column(
+                    children: [
+                      _topNavBar(),
+                      Expanded(
+                        child: DefaultTabController(
+                          length: 2,
+                          child: Column(
                             children: [
-                              Stack(alignment: Alignment.center, children: [
-                                CropGridViewer(
-                                  controller: _controller,
-                                  showGrid: false,
-                                ),
-                                AnimatedBuilder(
-                                  animation: _controller.video,
-                                  builder: (_, __) => OpacityTransition(
-                                    visible: !_controller.isPlaying,
-                                    child: GestureDetector(
-                                      onTap: _controller.video.play,
-                                      child: Container(
-                                        width: 40,
-                                        height: 40,
-                                        decoration: const BoxDecoration(
-                                          color: Colors.white,
-                                          shape: BoxShape.circle,
+                              Expanded(
+                                child: TabBarView(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  children: [
+                                    Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        CropGridViewer(
+                                          controller: _controller,
+                                          showGrid: false,
                                         ),
-                                        child: const Icon(Icons.play_arrow,
-                                            color: Colors.black),
+                                        AnimatedBuilder(
+                                          animation: _controller.video,
+                                          builder: (_, __) => OpacityTransition(
+                                            visible: !_controller.isPlaying,
+                                            child: GestureDetector(
+                                              onTap: _controller.video.play,
+                                              child: Container(
+                                                width: 40,
+                                                height: 40,
+                                                decoration: const BoxDecoration(
+                                                  color: Colors.white,
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: const Icon(
+                                                    Icons.play_arrow,
+                                                    color: Colors.black),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    CoverViewer(controller: _controller)
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Container(
+                                  color: Color(0xFF2C2B2B),
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 78.0),
+                                        child: Container(
+                                          height: 220,
+                                          //width: MediaQuery.of(context).size.width,
+                                          child: Sparkline(
+                                            max: 2.0,
+                                            min: 0.0,
+                                            data: data,
+                                            useCubicSmoothing: true,
+                                            cubicSmoothingFactor: 0.15,
+                                            averageLine: true,
+                                            averageLabel: false,
+                                            pointsMode: PointsMode.all,
+                                            lineColor: Color(0xFFFEDE34),
+                                            fillMode: FillMode.below,
+                                            pointSize: 10.0,
+                                            pointColor: Colors.white,
+                                            fillGradient: LinearGradient(
+                                                begin: Alignment.topCenter,
+                                                end: Alignment.bottomCenter,
+                                                colors: gradientColors),
+                                          ),
+                                        ),
+                                      ),
+                                      SliderTheme(
+                                        data: SliderThemeData(
+                                          trackHeight: 1.0,
+                                        ),
+                                        child: Slider(
+                                          inactiveColor: Colors.grey,
+                                          activeColor: Colors.amber,
+                                          value: _currentSpeed,
+                                          min: 0,
+                                          max: 2,
+                                          divisions: 20,
+                                          onChanged: (newSpeed) => {
+                                            setState(
+                                              () {
+                                                _currentSpeed = newSpeed;
+                                                final occuredValue =
+                                                    newSpeed + 0.25;
+                                                _controller.video
+                                                    .setPlaybackSpeed(
+                                                        occuredValue);
+                                                final indexSpot =
+                                                    _findSpotForChange();
+                                                //graphicSpots[indexSpot] =
+                                                //    FlSpot(indexSpot * 5, newSpeed);
+                                              },
+                                            )
+                                          },
+                                        ),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text("123"),
+                                          Text("123"),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              _customSnackBar(),
+                              ValueListenableBuilder(
+                                valueListenable: _isExporting,
+                                builder: (_, bool export, __) =>
+                                    OpacityTransition(
+                                  visible: export,
+                                  child: AlertDialog(
+                                    backgroundColor: Colors.white,
+                                    title: ValueListenableBuilder(
+                                      valueListenable: _exportingProgress,
+                                      builder: (_, double value, __) => Text(
+                                        "Exporting video ${(value * 100).ceil()}%",
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ]),
-                              CoverViewer(controller: _controller)
+                              )
                             ],
-                          )),
-                          Expanded(
-                            child: Container(
-                              color: Color(0xFF646161),
-                              child: Column(
-                                children: [
-                                  CustomLineChart(
-                                    points: graphicSpots,
-                                    speed: _currentSpeed,
-                                  ),
-                                  SliderTheme(
-                                    data: SliderThemeData(
-                                      trackHeight: 1.0,
-                                    ),
-                                    child: Slider(
-                                      inactiveColor: Colors.grey,
-                                      activeColor: Colors.amber,
-                                      value: _currentSpeed,
-                                      min: 0,
-                                      max: 2,
-                                      divisions: 20,
-                                      onChanged: (newSpeed) => {
-                                        setState(() {
-                                          _currentSpeed = newSpeed;
-                                          final occuredValue = newSpeed + 0.25;
-                                          _controller.video
-                                              .setPlaybackSpeed(occuredValue);
-                                          final indexSpot =
-                                              _findSpotForChange();
-                                          graphicSpots[indexSpot] =
-                                              FlSpot(indexSpot * 5, newSpeed);
-                                        })
-                                      },
-                                    ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("123"),
-                                      Text("123"),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
                           ),
-                          _customSnackBar(),
-                          ValueListenableBuilder(
-                            valueListenable: _isExporting,
-                            builder: (_, bool export, __) => OpacityTransition(
-                              visible: export,
-                              child: AlertDialog(
-                                backgroundColor: Colors.white,
-                                title: ValueListenableBuilder(
-                                  valueListenable: _exportingProgress,
-                                  builder: (_, double value, __) => Text(
-                                    "Exporting video ${(value * 100).ceil()}%",
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                        ])))
-              ])
-            ]))
+                        ),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            )
           : const Center(child: CircularProgressIndicator()),
     );
   }

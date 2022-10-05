@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
           bodyText1: TextStyle(),
           bodyText2: TextStyle(),
         ).apply(
-          bodyColor: Color.fromARGB(255, 32, 25, 25),
+          bodyColor: Color(0xFF2C2B2B),
           displayColor: Colors.white,
         ),
       ),

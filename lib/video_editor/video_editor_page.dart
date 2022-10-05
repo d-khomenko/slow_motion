@@ -124,7 +124,7 @@ class _VideoEditorPageState extends State<VideoEditorPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF646161),
+      backgroundColor: const Color(0xFF2C2B2B),
       body: _controller.initialized
           ? SafeArea(
               child: Stack(
